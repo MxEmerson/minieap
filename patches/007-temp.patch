@@ -1,0 +1,12 @@
+diff --git a/packet_plugin/rjv3/packet_plugin_rjv3_priv.c b/packet_plugin/rjv3/packet_plugin_rjv3_priv.c
+index 01ea72d..2ab8214 100644
+--- a/packet_plugin/rjv3/packet_plugin_rjv3_priv.c
++++ b/packet_plugin/rjv3/packet_plugin_rjv3_priv.c
+@@ -478,6 +478,7 @@ RESULT rjv3_process_result_prop(ETH_EAP_FRAME* frame) {
+         _msg = (RJ_PROP*)lookup_data(_srv_msg, NULL, rjv3_is_echokey_prop);
+         if (_msg == NULL) {
+             PR_ERR("无法找到 echo key 的位置，将不能进行心跳");
++            exit(0);
+             return FAILURE;
+         } else {
+             uint32_t _echokey = 0;
