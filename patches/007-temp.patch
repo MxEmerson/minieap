@@ -1,10 +1,22 @@
---- a/packet_plugin/rjv3/packet_plugin_rjv3_priv.c
-+++ b/packet_plugin/rjv3/packet_plugin_rjv3_priv.c
-@@ -478,6 +478,7 @@ RESULT rjv3_process_result_prop(ETH_EAP_FRAME* frame) {
-         _msg = (RJ_PROP*)lookup_data(_srv_msg, NULL, rjv3_is_echokey_prop);
-         if (_msg == NULL) {
-             PR_ERR("无法找到 echo key 的位置，将不能进行心跳");
-+            exit(0);
-             return FAILURE;
+--- a/eap_state_machine.c
++++ b/eap_state_machine.c
+@@ -182,6 +182,7 @@ static RESULT state_mach_process_success(ETH_EAP_FRAME* frame) {
+     PROG_CONFIG* _cfg = get_program_config();
+     if (PRIV->auth_round == _cfg->auth_round) {
+         PR_INFO("认证成功");
++        exit(0)
+         eap_state_machine_reset(); // Prepare for further use (e.g. re-auth after offline)
+         return SUCCESS;
+     } else {
+@@ -214,9 +215,11 @@ static RESULT state_mach_process_failure(ETH_EAP_FRAME* frame) {
+         /* Fail during auth */
+         if (++PRIV->fail_count == _cfg->max_failures) {
+             PR_ERR("认证失败 %d 次，已达到指定次数，正在退出……", PRIV->fail_count);
++            exit(1);
+             exit(EXIT_FAILURE);
          } else {
-             uint32_t _echokey = 0;
+             PR_WARN("认证失败 %d 次，将在 %d 秒或服务器请求后重试……", PRIV->fail_count, _cfg->wait_after_fail_secs);
++            exit(1);
+             schedule_alarm(_cfg->wait_after_fail_secs, restart_auth, NULL);
+         }
+     }
